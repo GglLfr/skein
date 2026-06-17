@@ -17,10 +17,10 @@ exclude = [
     "Justfile",
     "DESIGN.md",
 ]
-rust-version = "1.89.0"
+rust-version = "1.95.0"
 
 [dependencies]
-bevy = { version = "0.19.0-dev", default-features = false, features = ["bevy_log", "bevy_gltf", "bevy_world_serialization", "bevy_asset"] } 
+bevy = { version = "0.19.0-dev", default-features = false, features = ["bevy_log", "bevy_gltf", "bevy_world_serialization", "bevy_asset"] }
 serde = "1.0"
 serde_json = "1.0"
 tracing = "0.1"
