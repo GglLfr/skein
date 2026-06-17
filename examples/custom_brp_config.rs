@@ -1,10 +1,12 @@
-//! Setting up BRP manually to change the host/port
+//! Setting up BRP manually to change the
+//! host/port
 //!
-//! You will also have to configure the Blender addon
-//! to look for this host/port separately
+//! You will also have to configure the Blender
+//! addon to look for this host/port separately
 //!
-//! This is a copy of the `components_on_bone` example
-//! with slight modifications for BRP configuration
+//! This is a copy of the `components_on_bone`
+//! example with slight modifications for BRP
+//! configuration
 use std::f32::consts::PI;
 
 use bevy::{
@@ -62,10 +64,10 @@ fn setup(
 #[type_path = "components_on_bone"]
 struct ControlBone;
 
-// the bone and the cube are the same height. If we were
-// rotating the cube, it would rotate around its center.
-// We are rotating the Bone, which rotates from the bone's
-// root instead
+// the bone and the cube are the same height. If
+// we were rotating the cube, it would rotate
+// around its center. We are rotating the Bone,
+// which rotates from the bone's root instead
 fn control_bones(
     mut query: Query<&mut Transform, With<ControlBone>>,
     time: Res<Time>,

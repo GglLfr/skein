@@ -1,5 +1,4 @@
 //! Using Components placed on Bones
-//!
 use std::f32::consts::PI;
 
 use bevy::{
@@ -53,10 +52,10 @@ fn setup(
 #[reflect(Component)]
 struct ControlBone;
 
-// the bone and the cube are the same height. If we were
-// rotating the cube, it would rotate around its center.
-// We are rotating the Bone, which rotates from the bone's
-// root instead
+// the bone and the cube are the same height. If
+// we were rotating the cube, it would rotate
+// around its center. We are rotating the Bone,
+// which rotates from the bone's root instead
 fn control_bones(
     mut query: Query<&mut Transform, With<ControlBone>>,
     time: Res<Time>,

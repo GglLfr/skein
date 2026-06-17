@@ -17,6 +17,7 @@
 //! handle many handles like this.
 use bevy::{
     asset::RenderAssetUsages,
+    camera::Hdr,
     color::palettes::tailwind::SLATE_950,
     core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     ecs::{lifecycle::HookContext, world::DeferredWorld},
@@ -26,13 +27,10 @@ use bevy::{
     prelude::*,
     render::render_resource::{
         AsBindGroup, Extent3d, RenderPipelineDescriptor,
-        TextureDimension, TextureFormat,
+        SpecializedMeshPipelineError, TextureDimension,
+        TextureFormat,
     },
     shader::ShaderRef,
-};
-use bevy::{
-    camera::Hdr,
-    render::render_resource::SpecializedMeshPipelineError,
 };
 use bevy_skein::SkeinPlugin;
 

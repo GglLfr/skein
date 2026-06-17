@@ -1,32 +1,25 @@
 #![doc = include_str!("../README.md")]
 
-use bevy_app::{App, Plugin};
-use bevy_asset::LoadContext;
-use bevy_ecs::{
-    name::Name,
-    observer::On,
-    prelude::Add,
-    reflect::{
+use bevy::{
+    asset::LoadContext,
+    ecs::reflect::{
         AppTypeRegistry, ReflectBundle, ReflectCommandExt,
         ReflectComponent,
     },
-    resource::Resource,
-    system::{Commands, Query, Res},
-    world::{EntityWorldMut, World},
-};
-use bevy_gltf::{
-    GltfExtras, GltfMaterialExtras, GltfMeshExtras,
-    GltfSceneExtras,
-    extensions::{
-        ErasedGltfExtensionHandler, GltfExtensionHandler,
-        GltfExtensionHandlers,
+    gltf::{
+        GltfExtras, GltfMaterialExtras, GltfMeshExtras,
+        GltfSceneExtras,
+        extensions::{
+            ErasedGltfExtensionHandler,
+            GltfExtensionHandler, GltfExtensionHandlers,
+        },
     },
-};
-use bevy_log::{error, trace};
-use bevy_platform::collections::HashMap;
-use bevy_reflect::{
-    PartialReflect, Reflect, TypeRegistry, TypeRegistryArc,
-    serde::ReflectDeserializer,
+    platform::collections::HashMap,
+    prelude::*,
+    reflect::{
+        PartialReflect, Reflect, TypeRegistry,
+        TypeRegistryArc, serde::ReflectDeserializer,
+    },
 };
 use gltf::Node;
 use serde::de::DeserializeSeed;
@@ -59,8 +52,8 @@ pub struct SkeinPlugin {
     /// Bevy Remote Protocol plugins.
     ///
     /// Use `false` if you want to handle setting
-    /// up BRP yourself. The default constructor will
-    /// only enable BRP in dev builds.
+    /// up BRP yourself. The default constructor
+    /// will only enable BRP in dev builds.
     #[allow(dead_code)]
     pub handle_brp: bool,
 }
@@ -84,7 +77,7 @@ impl Plugin for SkeinPlugin {
             .0
             .clone();
         #[cfg(target_family = "wasm")]
-        bevy_tasks::block_on(async {
+        bevy::tasks::block_on(async {
             app.world_mut()
                 .resource_mut::<GltfExtensionHandlers>()
                 .0
@@ -107,29 +100,30 @@ impl Plugin for SkeinPlugin {
         // skein to handle setting up BRP or not.
         //
         // The `handle_brp` default is to enable `brp`
-        // and skein's custom endpoints when `debug_assertions`
-        // are enabled. This is mostly the difference
-        // between `dev` and `release`, but can be configured
+        // and skein's custom endpoints when
+        // `debug_assertions` are enabled. This is
+        // mostly the difference between `dev` and
+        // `release`, but can be configured
         // by users as well.
         #[cfg(all(
             not(target_family = "wasm"),
             feature = "brp"
         ))]
         if self.handle_brp {
-            bevy_log::debug!(
+            bevy::log::debug!(
                 "adding `bevy_remote::RemotePlugin` and `bevy_remote::http::RemoteHttpPlugin`. BRP HTTP server running at: {}:{}",
-                bevy_remote::http::DEFAULT_ADDR,
-                bevy_remote::http::DEFAULT_PORT
+                bevy::remote::http::DEFAULT_ADDR,
+                bevy::remote::http::DEFAULT_PORT
             );
             app.add_plugins((
                 // We only add the defaults. If a user wants 
                 // a different configuration, they can set 
                 // the plugins up themselves.
-                bevy_remote::RemotePlugin::default(),
-                bevy_remote::http::RemoteHttpPlugin::default(),
+                bevy::remote::RemotePlugin::default(),
+                bevy::remote::http::RemoteHttpPlugin::default(),
             ));
         } else {
-            bevy_log::debug!(
+            bevy::log::debug!(
                 "Skein is *not* adding `RemotePlugin` and `RemoteHttpPlugin`"
             );
         }
@@ -145,12 +139,12 @@ impl Plugin for SkeinPlugin {
             // add presets endpoint
             #[cfg(feature = "presets")]
             {
-                bevy_log::debug!(
+                bevy::log::debug!(
                     "enabling {} endpoint",
                     presets::BRP_SKEIN_PRESETS_METHOD
                 );
                 let presets_id =
-                bevy_remote::RemoteMethodSystemId::Instant(
+                bevy::remote::RemoteMethodSystemId::Instant(
                     app.main_mut()
                         .world_mut()
                         .register_system(
@@ -159,7 +153,7 @@ impl Plugin for SkeinPlugin {
                 );
                 let remote_methods = app
                     .world_mut()
-                    .get_resource_mut::<bevy_remote::RemoteMethods>(
+                    .get_resource_mut::<bevy::remote::RemoteMethods>(
                 );
                 if let Some(mut remote_methods) =
                     remote_methods
@@ -178,7 +172,9 @@ impl Plugin for SkeinPlugin {
                             "the user"
                         },
                         if self.handle_brp {
-                            // if skein was supposed to add the plugins and didn't, then this is likely a skein bug
+                            // if skein was supposed to add
+                            // the plugins and didn't, then
+                            // this is likely a skein bug
                             "This is likely a bug: https://github.com/rust-adventure/skein/issues"
                         } else {
                             ""
@@ -441,7 +437,7 @@ impl GltfExtensionHandler for GltfExtensionHandlerSkein {
         &mut self,
         _load_context: &mut LoadContext<'_>,
         scene: &gltf::Scene,
-        world_root_id: bevy_ecs::entity::Entity,
+        world_root_id: Entity,
         world: &mut World,
     ) {
         let Some(value) = scene.extension_value(EXTENSION)
@@ -471,9 +467,10 @@ impl GltfExtensionHandler for GltfExtensionHandlerSkein {
         if gltf_node.light().is_some() {
             // If this node has light information, it is the
             // parent of a *Light.
-            // Lights are created as children of their parents
-            // similar to how meshes and objects work.
-            // so handle them in dedicated functions.
+            // Lights are created as children of their
+            // parents similar to how meshes and
+            // objects work. so handle them in
+            // dedicated functions.
             return;
         }
         let type_registry = self.type_registry.read();
